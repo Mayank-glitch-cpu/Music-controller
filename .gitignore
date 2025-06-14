@@ -1,5 +1,10 @@
-./frontend/node_modules
-./frontend/_pycache_
-./api/_pycache_
-./music_controller/__pycache__
+frontend/node_modules/
+frontend/__pycache__/
+api/__pycache__/
+music_controller/__pycache__/
+*.pyc
+*.pyo
 db.sqlite3
+.DS_Store
+.env
+*.log
