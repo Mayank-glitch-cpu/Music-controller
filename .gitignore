@@ -8,3 +8,6 @@ db.sqlite3
 .DS_Store
 .env
 *.logfrontend/node_modules/
+frontend/node_modules/
+frontend/static/frontend/*.js
+frontend/static/frontend/*.js.map
