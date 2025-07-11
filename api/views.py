@@ -108,7 +108,7 @@ class UpdateRoom(APIView):
     serializer_class = UpdateRoomSerializer
 
     def patch(self, request, format=None): # patch method is used to update the room
-        if not request.session.exists(request.session.session_key):
+        if not request.session.exists(request.session.session_key): # this will check if the session exists
             request.session.create()
 
         serializer = self.serializer_class(data=request.data, partial=True)
