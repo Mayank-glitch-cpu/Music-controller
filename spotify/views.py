@@ -10,15 +10,29 @@ from api.models import Room
 
 class AuthURL(APIView):
     def get(self, request, format=None):
+        # Get room_code from query parameters
+        room_code = request.GET.get('room_code')
+        print(f"AuthURL: Room code from query params: {room_code}")
+        
         scopes = 'user-read-playback-state user-modify-playback-state user-read-currently-playing'
 
-        url = Request('GET', 'https://accounts.spotify.com/authorize', params={
+        # Add state parameter to store the room_code
+        params = {
             'scope': scopes,
             'response_type': 'code',
             'redirect_uri': REDIRECT_URI,
-            'client_id': CLIENT_ID
-        }).prepare().url
-
+            'client_id': CLIENT_ID,
+        }
+        
+        # Only add state if room_code exists
+        if room_code:
+            params['state'] = room_code
+            
+        url = Request('GET', 'https://accounts.spotify.com/authorize', params=params).prepare().url
+        
+        print(f"Auth URL created with room code: {room_code}")
+        print(f"Full auth URL: {url}")
+        
         return Response({'url': url}, status=status.HTTP_200_OK)
 
 
@@ -32,11 +46,11 @@ def spotify_callback(request):
     
     if error:
         print(f"Spotify auth error: {error}")
-        return redirect('frontend:index')  # Change 'frontend:' to 'frontend:index'
+        return redirect('http://localhost:8080/')
     
     if not code:
         print("No code provided in the callback")
-        return redirect('frontend:index')  # Change 'frontend:' to 'frontend:index'
+        return redirect('http://localhost:8080/')
     
     try:
         response = post('https://accounts.spotify.com/api/token', data={
@@ -52,7 +66,7 @@ def spotify_callback(request):
         
         if 'error' in response:
             print(f"Spotify token error: {response.get('error')}")
-            return redirect('frontend:index')  # Change 'frontend:' to 'frontend:index'
+            return redirect('http://localhost:8080/')
         
         access_token = response.get('access_token')
         token_type = response.get('token_type')
@@ -70,15 +84,17 @@ def spotify_callback(request):
             refresh_token
         )
         
-        # If room_code is available, redirect to the room
+        # Save room code in the session to retrieve it later
         if room_code:
-            return redirect(f'/room/{room_code}')
+            request.session['room_code'] = room_code
+            # Redirect to the React frontend with hash routing
+            return redirect(f'http://localhost:8080/#/room/{room_code}')
         else:
-            return redirect('frontend:index')  # Change 'frontend:' to 'frontend:index'
+            return redirect('http://localhost:8080/')
         
     except Exception as e:
         print(f"Exception in Spotify callback: {e}")
-        return redirect('frontend:index')  # Change 'frontend:' to 'frontend:index'
+        return redirect('http://localhost:8080/')
 
 
 class IsAuthenticated(APIView):
