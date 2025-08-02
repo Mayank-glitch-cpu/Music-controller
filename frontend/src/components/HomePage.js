@@ -4,7 +4,6 @@ import CreateRoomPage from "./CreateRoomPage";
 import Room from "./Room";
 import { Grid, Button, ButtonGroup, Typography } from "@mui/material";
 import {
-  BrowserRouter as Router,
   Routes,
   Route,
   Link,
@@ -17,6 +16,7 @@ export default class HomePage extends Component {
     this.state = {
       roomCode: null,
     };
+    this.clearRoomCode = this.clearRoomCode.bind(this);
   }
 
   async componentDidMount() {
@@ -56,25 +56,26 @@ export default class HomePage extends Component {
       roomCode: null,
     });
   }
+  
   render() {
     return (
-      <Router>
-        <Routes>
-          <Route
-            path="/"
-            element={
-              this.state.roomCode ? (
-                <Navigate to={`/room/${this.state.roomCode}`} replace />
-              ) : (
-                this.renderHomePage()
-              )
-            }
-          />
-          <Route path="/join" element={<RoomJoinPage />} />
-          <Route path="/create" element={<CreateRoomPage />} />
-          <Route path="/room/:roomCode" element={<Room />} />
-        </Routes>
-      </Router>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            this.state.roomCode ? (
+              <Navigate to={`/room/${this.state.roomCode}`} replace />
+            ) : (
+              this.renderHomePage()
+            )
+          }
+        />
+        <Route path="/join" element={<RoomJoinPage />} />
+        <Route path="/create" element={<CreateRoomPage />} />
+        <Route path="/room/:roomCode" element={<Room leaveRoomCallback={this.clearRoomCode} />} />
+        <Route path="/callback" element={<Navigate to="/" />} />
+        <Route path="*" element={<div>Route not found: {window.location.pathname}</div>} />
+      </Routes>
     );
   }
 }

@@ -20,5 +20,6 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('api.urls')), # this means that all urls in the api app will be included here, when nothing is specified
-    path('',include('frontend.urls'))
+    path('',include('frontend.urls')),
+    path('spotify/', include('spotify.urls')),  # Include Spotify URLs
 ]

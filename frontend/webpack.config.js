@@ -46,7 +46,7 @@ module.exports = (env, argv) => {
     devServer: {
       port: 8080,
       hot: true,
-      historyApiFallback: true,
+      historyApiFallback: true, // Add this for client-side routing
       static: {
         directory: path.join(__dirname, 'static'),
       },
@@ -56,14 +56,18 @@ module.exports = (env, argv) => {
       headers: {
         'Access-Control-Allow-Origin': '*',
       },
-      proxy: [
-        {
-          context: ['/api'],
-          target: 'http://localhost:8000',
+      proxy: {
+        '/api': {
+          target: 'http://127.0.0.1:8000',
           secure: false,
-          changeOrigin: true,
+          changeOrigin: true
         },
-      ],
+        '/spotify': {
+          target: 'http://127.0.0.1:8000',
+          secure: false,
+          changeOrigin: true
+        }
+      }
     },
   };
 };
